@@ -5,9 +5,7 @@ import java.util.LinkedList;
 import java.util.Arrays; 
 
 /*Rimpy Amal Saha
- * 6600258
  * Muditaa Annauth
- * 6334965
  */                                                     
 
 public class ChessMoves {
