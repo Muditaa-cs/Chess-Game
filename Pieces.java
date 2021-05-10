@@ -1,7 +1,4 @@
 /*Rimpy Amal Saha
- * 6600258
- * Muditaa Annauth
- * 6334965
  */  
 class Pieces 
 {
