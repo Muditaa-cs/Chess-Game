@@ -5,10 +5,9 @@ import static java.lang.Math.*;  // for math constants and functions
 import java.util.LinkedList;
 import java.util.Arrays; 
 
-/** This class represents an team in the Niagara Hockey League. A
-  * team has an team name, a forScore, an againstScore and points.
+/**
   * 
-  * @author 
+  * @author Rimpy Saha, Muditaa Annauth
   * 
   * @version 1.0 ()                                                     */
 
@@ -733,7 +732,7 @@ public class ChessMoves {
       
       if ( a1 == false ) {
         board[x][y].isPawnPromoted = true; 
-        while ( count < 4 ) {                       // four times added??? 
+        while ( count < 4 ) {                       // four times added 
           int [ ] change = {x,y,x+m,y}; 
           output = join_array(change,output); 
           count++; 
