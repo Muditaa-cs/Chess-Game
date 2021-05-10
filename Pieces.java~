@@ -1,0 +1,32 @@
+package team;
+
+class Pieces 
+{
+ char piece;
+ int value;
+ int []move;
+ boolean isCastling;
+ boolean hasMoved;
+ boolean isPawnPromoted;
+ boolean hasCastled;
+ public Pieces(char piece,  int value) 
+ {
+  this.piece=piece; 
+  this.value=value;
+  this.isCastling=false;
+  this.hasMoved=false;
+  this.isPawnPromoted=false;
+  this.hasCastled=false;
+ }
+ public Pieces(char piece,  int value, int i, int j) 
+ {
+  this.piece=piece; 
+  this.value=value;
+  int arr[]={i,j};
+  this.move=arr;
+  this.isCastling=false;
+  this.hasMoved=false;
+  this.isPawnPromoted=false;
+  this.hasCastled=false;
+ }
+}

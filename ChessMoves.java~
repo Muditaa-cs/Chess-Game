@@ -1,0 +1,1316 @@
+package team; 
+import BasicIO.*;                // for IO classes
+import static BasicIO.Formats.*; // for field formats
+import static java.lang.Math.*;  // for math constants and functions
+import java.util.LinkedList;
+import java.util.Arrays; 
+
+/** This class represents an team in the Niagara Hockey League. A
+  * team has an team name, a forScore, an againstScore and points.
+  * 
+  * @author 
+  * 
+  * @version 1.0 ()                                                     */
+
+public class ChessMoves {
+  
+  private char pawn,bishop,knight,queen,rook,king; 
+  private char o_pawn,o_bishop,o_knight,o_queen,o_rook,o_king; 
+  private final int  kingsWorth = 9000;
+  private final int queensWorth=900;
+  private final int rooksWorth=500;
+  private final int bishopsWorth=300;
+  private final int knightsWorth=300;
+  private final int pawnsWorth=100;
+  private int pawns_Rank;
+  private int pieces_Rank;
+  private Pieces [ ] [ ] board; 
+  private int [ ] [ ] positions = { {-1,-1} , {-1,1}, {1,1}, {1,-1} };                              // add with positions1 to form moves1 
+  private int [ ] [ ] positions1 = { {-1,0} , {0,1}, {1,0}, {0,-1} }; 
+  private int [ ] [ ] moves = { {-2,-1}, {-2,1}, {-1,2}, {1,2}, {2,1}, {2,-1}, {-1,-2}, {1,-2} }; 
+  private int [ ] [ ] moves1 = { {-1,-1} , {-1,1}, {1,1}, {1,-1}, {-1,0} , {0,1}, {1,0}, {0,-1} }; 
+  public int king_x,king_y;       
+  public LinkedList<String> list_moves; 
+  public LinkedList<Character> l; 
+  public LinkedList<Pieces> list; 
+  
+  public ChessMoves ( ) {
+    
+  };  // constructor
+  
+  public void check_side ( String a ) {
+    
+    /** Depending on whose turn it is, the chess pieces will be assigned to char to help decide on which
+      * moves are possible in the board                              */
+    
+    if ( a == "white" ) {
+      pawn = 'p'; 
+      bishop = 'b'; 
+      knight = 'n'; 
+      queen = 'q'; 
+      rook = 'r'; 
+      king = 'k';
+      o_pawn = 'P'; 
+      o_bishop = 'B'; 
+      o_knight = 'N'; 
+      o_queen = 'Q'; 
+      o_rook = 'R'; 
+      o_king = 'K';
+      pawns_Rank=6;
+      pieces_Rank=7; 
+    }
+    
+    else if  ( a == "black" ) {
+      pawn = 'P'; 
+      bishop = 'B'; 
+      knight = 'N'; 
+      queen = 'Q'; 
+      rook = 'R'; 
+      king = 'K';
+      o_pawn = 'p'; 
+      o_bishop = 'b'; 
+      o_knight = 'n'; 
+      o_queen = 'q'; 
+      o_rook = 'r'; 
+      o_king = 'k';
+      pawns_Rank=1;
+      pieces_Rank=0;
+    }
+    
+  };  //Check_side
+  
+  /** iterate though the board */
+  // player = human or computer 
+  // side = white or black 
+  public int position (int i, int j, char piece)//Some pieces are good in certain places while, like pawn promotion
+  {
+    if (Character.isLowerCase(piece))//A white piece 
+    {
+      check_side("white");
+      int[][] kings_position={{-30,-40,-40,-50,-50,-40,-40,-30},
+        {-30,-40,-40,-50,-50,-40,-40,-30},
+        {-30,-40,-40,-50,-50,-40,-40,-30},
+        {-30,-40,-40,-50,-50,-40,-40,-30},
+        {-20,-30,-30,-40,-40,-30,-30,-20},
+        {-10,-20,-20,-20,-20,-20,-20,-10},
+        { 20, 20, 0 , 0 , 0 , 0 , 20, 20},
+        { 20, 30, 10, 0 , 0 , 10, 30, 20}};
+      int[][] queens_position={{-20,-10,-10, -5, -5,-10,-10,-20},
+        {-10, 0 , 0 , 0 , 0 , 0 , 0 ,-10},
+        {-10, 0 , 5 , 5 , 5 , 5 , 0 ,-10},
+        {-5 ,0,5,5,5,5,0,5},
+        { 0 ,0,5,5,5,5,0,-5},
+        {-10,5,5,5,5,5,0,-10},
+        {-10,0,5,0,0,0,0,-10},
+        {-20,-10,-10,-5,-5,-10,-10,-20}};
+      int[][] rooks_position= {{0,0,0,0,0,0,0,0},
+        {5,10,10,10,10,10,10,10,5},
+        {-5,0,0,0,0,0,0,-5},
+        {-5,0,0,0,0,0,0,-5},
+        {-5,0,0,0,0,0,0,-5},
+        {-5,0,0,0,0,0,0,-5},
+        {-5,0,0,0,0,0,0,-5},
+        {0,0,0,5,5,0,0,0}};
+      int[][] bishops_position={{-20,-10,-10,-10,-10,-10,-10,-20},
+        {-10,0,0,0,0,0,0,-10},
+        {-10,0,5,10,10,5,0,-10},
+        {-10,5,5,10,10,5,5,-10},
+        {-10,0,10,10,10,10,0,-10},
+        {-10,10,10,10,10,10,10,-10},
+        {-10,5,0,0,0,0,5,-10},
+        {-20,-10,-10,-10,-10,-10,-10,-20}};
+      int[][] knights_position={{-50,-40,-30,-30,-30,-30,-40,-50},
+        {-40,-20,0,0,0,0,-20,-40},
+        {-30,0,10,15,15,10,0,-30},
+        {-30,5,15,20,20,15,5,-30},
+        {-30,0,15,20,20,15,0,-30},
+        {-30,5,10,15,15,10,5,-30},
+        {-40,-20,0,5,5,0,-20,-40},
+        {-50,-40,-30,-30,30,-30,-40,-50}};
+      int[][] pawns_position= {{0,0,0,0,0,0,0,0},
+        {50,50,50,50,50,50,50,50},
+        {10,10,20,30,30,20,10,10},
+        {5,5,10,25,25,10,5,5},
+        {0,0,0,20,20,0,0,0},
+        {5,-5,-10,0,0,-10,-5,5},
+        {5,10,10,-20,-20,10,10,5},
+        {0,0,0,0,0,0,0,0}};
+      if(piece==pawn)
+        return (pawnsWorth+pawns_position[i][j]);
+      else if(piece==knight)
+        return (knightsWorth+knights_position[i][j]);
+      else if(piece==bishop)
+        return (bishopsWorth+bishops_position[i][j]);
+      else if(piece==rook)
+        return (rooksWorth+rooks_position[i][j]);
+      else if(piece==queen)
+        return (queensWorth+queens_position[i][j]);
+      else if(piece==king)
+        return (kingsWorth+kings_position[i][j]);
+      
+    }
+    
+    else
+    {
+      check_side("black");
+      int[][] kings_position={{20, 30, 10, 0 , 0 , 10, 30, 20},
+        {20, 20, 0 , 0 , 0 , 0 , 20, 20},
+        {-10,-20,-20,-20,-20,-20,-20,-10},
+        {-20,-30,-30,-40,-40,-30,-30,-20},
+        {-30,-40,-40,-50,-50,-40,-40,-30},
+        {-30,-40,-40,-50,-50,-40,-40,-30},
+        {-30,-40,-40,-50,-50,-40,-40,-30},
+        { -30,-40,-40,-50,-50,-40,-40,-30}};
+      int[][] queens_position={{-20,-10,-10,-5,-5,-10,-10,-20},
+        {-10,0,5,0,0,0,0,-10},
+        {-10,5,5,5,5,5,0,-10},
+        { 0 ,0,5,5,5,5,0,-5},
+        {-5 ,0,5,5,5,5,0,5},
+        {-10, 0 , 5 , 5 , 5 , 5 , 0 ,-10},
+        {-10, 0 , 0 , 0 , 0 , 0 , 0 ,-10},
+        {-20,-10,-10, -5, -5,-10,-10,-20}};
+      int[][] rooks_position= {{0,0,0,5,5,0,0,0},
+        {-5,0,0,0,0,0,0,-5},
+        {-5,0,0,0,0,0,0,-5},
+        {-5,0,0,0,0,0,0,-5},
+        {-5,0,0,0,0,0,0,-5},
+        {-5,0,0,0,0,0,0,-5},
+        {5,10,10,10,10,10,10,10,5},
+        {0,0,0,0,0,0,0,0}};
+      int[][] bishops_position={{-20,-10,-10,-10,-10,-10,-10,-20},
+        {-10,5,0,0,0,0,5,-10},
+        {-10,10,10,10,10,10,10,-10},
+        {-10,0,10,10,10,10,0,-10},
+        {-10,5,5,10,10,5,5,-10},
+        {-10,0,5,10,10,5,0,-10},
+        {-10,0,0,0,0,0,0,-10},
+        {-20,-10,-10,-10,-10,-10,-10,-20}};
+      int[][] knights_position={{-50,-40,-30,-30,30,-30,-40,-50},
+        {-40,-20,0,5,5,0,-20,-40},
+        {-30,5,10,15,15,10,5,-30},
+        {-30,0,15,20,20,15,0,-30},
+        {-30,5,15,20,20,15,5,-30},
+        {-30,0,10,15,15,10,0,-30},
+        {-40,-20,0,0,0,0,-20,-40},
+        {-50,-40,-30,-30,-30,-30,-40,-50}};
+      int[][] pawns_position= {{0,0,0,0,0,0,0,0},
+        {5,10,10,-20,-20,10,10,5},
+        {5,-5,-10,0,0,-10,-5,5},
+        {0,0,0,20,20,0,0,0},
+        {5,5,10,25,25,10,5,5},
+        {10,10,20,30,30,20,10,10},
+        {50,50,50,50,50,50,50,50},
+        {0,0,0,0,0,0,0,0}};
+      if(piece==pawn)
+        return (pawnsWorth+pawns_position[i][j]);
+      else if(piece==knight)
+        return (knightsWorth+knights_position[i][j]);
+      else if(piece==bishop)
+        return (bishopsWorth+bishops_position[i][j]);
+      else if(piece==rook)
+        return (rooksWorth+rooks_position[i][j]);
+      else if(piece==queen)
+        return (queensWorth+queens_position[i][j]);
+      else if(piece==king)
+        return (kingsWorth+kings_position[i][j]);
+      
+    }
+    return 0;
+  }//position
+  
+  public int evaluate(Pieces[][] board, String side, int moves[])
+  {
+    check_side(side);
+    int sum=0;
+    if(checkmate(board_iteration ( board, side, moves ),board))
+    {
+      sum = -9999999;
+    }
+    else if((stalemate(board_iteration ( board, side, moves ),board))||drawn(board))
+    {
+      sum = -5555555;
+    }
+    else
+    {
+    char p;
+    int val=0;//value of a piece at a particular position on the board
+    for(int i =0; i<board.length;i++)
+    {
+      for(int j =0; j< board[0].length;j++)
+      {
+        val = possesion(board,i,j);
+        p = board[i][j].piece; 
+        if(p==pawn)//don't check mobility, protect for a pawn since that encourages overuse of the pawn and the positions function also basically covers everything
+        {
+          sum=sum+ val*threats(i,j,board,moves)+val*protect(i,j,board,moves);//pawn promotion is taken care of by possesion
+          //We also avoid evaluating a pawn for mobility and possibility of en-passant as this might encourage the use of pawn too much
+          if(doubledPawn(j,board,pawn)==true)
+          {
+            sum=sum-7;
+          }
+          if(IsolatedPawn(j,board,pawn)==true)
+          {
+            sum=sum-2;
+          }
+        }
+        else if ( p == bishop ) 
+        { 
+          sum = sum+val*threats(i,j,board,moves)+val*protect(i,j,board,moves)+val*mobility(i,j,board,moves);          
+        }
+        
+        else if ( p == knight ) 
+        {
+          sum = sum+val*threats(i,j,board,moves)+val*protect(i,j,board,moves)+val*mobility(i,j,board,moves);          
+        }
+        
+        else if ( p == queen ) 
+        {
+          sum = sum+val*threats(i,j,board,moves)+val*protect(i,j,board,moves)+val*mobility(i,j,board,moves);          
+        }
+        
+        else if ( p == rook ) 
+        {
+          sum = sum+val*threats(i,j,board,moves)+val*protect(i,j,board,moves)+val*mobility(i,j,board,moves);
+          if(board[i][j].isCastling==false && board[i][j].hasCastled==false)
+          {
+            sum = sum - 5;
+          }       
+        }
+        
+        else if ( p == king ) //we don't want pieces next to it at all if possible
+        {
+          sum = sum-val*threats(i,j,board,moves)+val*protect(i,j,board,moves)+val*mobility(i,j,board,moves);
+          if(board[i][j].isCastling==false && board[i][j].hasCastled==false)
+          {
+            sum = sum - 5;
+          }
+        } 
+      }
+    }
+    }
+    return sum;
+  }//evaluate
+  
+  public boolean doubledPawn(int colRank,Pieces[][] board, char piece)//minus the value at current position if a pawn is ahead
+  {
+    int cnt=0;
+    for(int i =0;i<board.length;i++)
+    {
+      if( board[i][colRank].piece==piece)
+      {
+        cnt++;
+      }
+    }
+    if(cnt>=2)
+      return true;
+    else
+      return false;       
+  }//doubledPawn
+  
+  public boolean IsolatedPawn(int colRank,Pieces[][] board, char piece)
+  {
+    if (colRank>0)
+    {
+      for(int i =0;i<board.length;i++)
+      {
+        if( board[i][colRank-1].piece==piece)
+        {
+          return false;
+        }
+      }
+    }
+    if (colRank<(board.length -1))
+    {
+      for(int i =0;i<board.length;i++)
+      {
+        if( board[i][colRank+1].piece==piece)
+        {
+          return false;
+        }
+      }
+    }
+    return true;    
+  }//IsolatedPawn
+  
+  public int possesion(Pieces[][] board, int i, int j)
+  {
+    int eval_value=0;
+    char p=board[i][j].piece;
+    eval_value=eval_value+position(i,j,p);
+    return eval_value;
+  }//possesion
+  
+  
+  public int mobility(int i, int j, Pieces board[][], int [] moves)//or how much is the piece developed, never called with pawn
+  {
+    int eval_value=0;
+    LinkedList<Pieces> mobList = new LinkedList<Pieces>();
+    mobList = movesOfaPiece(i,j,board,moves);
+    eval_value=mobList.size();
+    return eval_value;
+  }//mobility
+  public LinkedList<Pieces> threaten(int x, int y, Pieces board[][],int [] moves)
+  {
+    char p;
+    Pieces allP;
+    LinkedList<Pieces> opponentsList = new LinkedList<Pieces>();
+    for ( int i=0 ; i<board.length ; i++ ) 
+    {
+      for ( int j=0 ; j<board[i].length ; j++ ) 
+      {
+        p = board[i][j].piece; 
+        if(p==o_pawn)
+        {
+          allP=new Pieces(p,pawnsWorth,i,j);
+          opponentsList.add(allP);
+        }
+        else if(p==o_bishop)
+        {
+          allP=new Pieces(p,pawnsWorth,i,j);
+          opponentsList.add(allP);
+        }
+        else if(p==o_knight)
+        {
+          allP=new Pieces(p,pawnsWorth,i,j);
+          opponentsList.add(allP);
+        }
+        else if(p==o_queen)
+        {
+          allP=new Pieces(p,pawnsWorth,i,j);
+          opponentsList.add(allP);
+        }
+        else if(p==o_rook)
+        {
+          allP=new Pieces(p,pawnsWorth,i,j);
+          opponentsList.add(allP);
+        }
+        else if(p==o_king)
+        {
+          allP=new Pieces(p,pawnsWorth,i,j);
+          opponentsList.add(allP);
+        }
+      }
+      
+    }
+    return opponentsList;
+  }
+  public int threats(int x, int y, Pieces board[][], int [] moves)
+  {
+    int eval_value=0;
+    LinkedList<Pieces> List = new LinkedList<Pieces>();
+    List = movesOfaPiece(x,y,board,moves);
+    LinkedList<Pieces> opponentsList = threaten(x,y,board,moves);
+    for(int i =0; i< List.size(); i++)
+    {
+      for(int j =0; j< opponentsList.size();j++)
+      {
+        if((List.get(i).move[2]==opponentsList.get(j).move[0]) && (List.get(i).move[3]==opponentsList.get(j).move[1]))//if one of the moves a possible capture or threat
+        {
+          if(opponentsList.get(j).piece==o_pawn)
+          {
+            eval_value = eval_value+1;
+          }
+          else if(opponentsList.get(j).piece==o_bishop)
+          {
+            eval_value = eval_value+3;
+          }
+          else if(opponentsList.get(j).piece==o_knight)
+          {
+            eval_value = eval_value+3;
+          }
+          else if(opponentsList.get(j).piece==o_queen)
+          {
+            eval_value = eval_value+8;
+          }
+          else if(opponentsList.get(j).piece==o_rook)
+          {
+            eval_value = eval_value+5;
+          }
+          //putting a king in check is great! but it generally does not remain for long, 
+          //and since it probably close to the other side, it is better to get the pawn promoted
+          else if(opponentsList.get(j).piece==o_king)
+          {
+            eval_value = eval_value+9;
+          }
+        }
+      }
+    }
+    return eval_value;
+  }//threats
+  
+  public int protect(int x, int y, Pieces board[][], int [] moves)
+  {
+    int eval_value=0;
+    int rowFile;
+    int colRank;   
+    char storep=board[x][y].piece;
+    LinkedList<Pieces> List = new LinkedList<Pieces>();
+    char p =board[x][y].piece;
+    String side;//must be removed once evaluated is ready
+    if (Character.isLowerCase(p))//to return values to their original state
+    {
+      side="white";
+    }
+    else
+    {
+      side="black";
+    }
+    check_side(side);
+    board[x][y].piece='-';
+    List = board_iteration(board,side,moves);
+    for(int i=0;i<List.size();i++)
+    {
+      if((List.get(i).move[2]==x)&&(List.get(i).move[3]==y))
+      {
+        eval_value=eval_value+1;
+      }
+    }
+    board[x][y].piece=storep;
+    return eval_value;
+  }//protect
+  
+  public LinkedList<Pieces> movesOfaPiece(int i, int j, Pieces board[][], int [] move)
+  {
+    char p =board[i][j].piece;
+    String side;//must be removed once evaluated is ready
+    if (Character.isLowerCase(p))
+    {
+      side="white";
+    }
+    else
+    {
+      side="black";
+    }
+    check_side(side);
+    LinkedList<Pieces> listy = new LinkedList<Pieces>();
+    if ( p == pawn ) { 
+      input(listy,board[i][j],pawn_check(i,j,side,move)); 
+      
+    }
+    
+    else if ( p == bishop ) { 
+      input(listy,board[i][j],move_brq(i,j,positions,bishop)); 
+      
+    }
+    
+    else if ( p == knight ) {
+      input(listy,board[i][j],move_knight_king(i,j,moves,knight)); 
+      
+    }
+    
+    else if ( p == queen ) {
+      input(listy,board[i][j],move_brq(i,j,moves1,queen)); 
+      
+    }
+    
+    else if ( p == rook ) {
+      input(listy,board[i][j],move_brq(i,j,positions1,rook)); 
+      
+    }
+    
+    else if ( p == king ) {
+      input(listy,board[i][j],move_knight_king(i,j,moves1,king)); 
+      
+    } 
+    LinkedList<Pieces> returnList=multi(listy);
+    return returnList;
+  }//movesOfaPiece ... a helper method
+  
+  public LinkedList<Pieces> board_iteration ( Pieces [ ] [ ] array, String side, int [ ] move ) 
+  {      
+    char p; 
+    int range=0; 
+    list = new LinkedList<Pieces>();  // to store the pieces that can be moved in this board configuration 
+    
+    board = array;                    // assign board  
+    
+    check_side(side);                 // assign chess pieces and opposing chess pieces 
+    
+    // iterating through the board 
+    for ( int i=0 ; i<board.length ; i++ ) {
+      for ( int j=0 ; j<board[i].length ; j++ ) {
+        p = board[i][j].piece; 
+        
+        if ( p == pawn ) { 
+          input(list,board[i][j],pawn_check(i,j,side,move)); 
+          
+        }
+        
+        else if ( p == bishop ) { 
+          input(list,board[i][j],move_brq(i,j,positions,bishop)); 
+          
+        }
+        
+        else if ( p == knight ) {
+          input(list,board[i][j],move_knight_king(i,j,moves,knight)); 
+          
+        }
+        
+        else if ( p == queen ) {
+          input(list,board[i][j],move_brq(i,j,moves1,queen)); 
+          
+        }
+        
+        else if ( p == rook ) {
+          input(list,board[i][j],move_brq(i,j,positions1,rook)); 
+          
+        }
+        
+        else if ( p == king ) {
+          input(list,board[i][j],move_knight_king(i,j,moves1,king)); 
+          
+        } 
+        
+      }; 
+      
+    };
+    
+    castling(side); 
+    LinkedList<Pieces> list2=new LinkedList<Pieces>();
+    list2=multi(list);
+    return list2; 
+  };  // board_iteration
+  
+  public LinkedList<Pieces> multi(LinkedList<Pieces> list)//returns a solved list
+  {
+    LinkedList<Pieces> allMoves = new LinkedList<Pieces>(); 
+    int num_moves;//number of moves for one piece
+    Pieces all_moves;
+    int from_to[]=new int[4];
+    int start=0;
+    for(int i = 0; i < list.size();i++)
+    {
+      num_moves =(list.get(i).move.length)/4;//number of moves for one piece
+      for(int j = 0;j < num_moves; j++)
+      {
+        start=0;
+        all_moves = new Pieces(list.get(i).piece, list.get(i).value);
+        all_moves.hasMoved=list.get(i).hasMoved;
+        all_moves.isPawnPromoted=list.get(i).isPawnPromoted;
+        all_moves.isCastling=list.get(i).isCastling;
+        all_moves.move = new int[4];
+        for(int k = (4*j); k< ((4*j)+4);k++)
+        {
+          from_to[start++]= list . get(i).move[k];
+        }
+        for(int k = 0; k < 4; k++)
+        {
+          all_moves.move[k]=from_to[k];
+        }
+        allMoves.add(all_moves);
+      }
+    }
+    return allMoves;
+  }//multi
+  public int [ ] pawn_check ( int x, int y, String player, int [ ] a ) {
+    
+    int m=0,n=0; 
+    int row1=0; 
+    int row2=0;
+    
+    int [ ] output = { }; 
+    
+    if ( player == "black" ) {
+      row1 = 6; 
+      row2 = 4; 
+      m = 1; 
+      n = 2; 
+      
+    } 
+    
+    else if ( player == "white" ) {                                                             
+      row1 = 1; 
+      row2 = 3; 
+      m = -1; 
+      n = -2; 
+      
+    }
+    
+    if ( x == row1 ) {
+      output = pawn_promotion(x,y,m); 
+      
+    }
+    
+    else if ( x < row1 || x > row1 ) {
+      output = pawn_move(x,y,m,n); 
+      
+      if ( x == row2 ) {
+        output = en_passant(x,y,a); 
+        
+      }
+      
+    }
+    
+    return output; 
+    
+  }; //pawn_check
+  
+  
+  public int [ ] pawn_move ( int x, int y, int m, int n ) {     
+    
+    char b = ' ';  
+    
+    int [ ] output = { }; 
+    boolean a1; 
+    
+    // pawn will always move 1 square if free space is available 
+    if ( board[x+m][y].piece == '-' ) { 
+      board[x][y].piece = '-';                      // this part moves the piece, checks if king is in check to allow or not for the move
+      board[x+m][y].piece = pawn; 
+      a1 = check_king(board); 
+      change(x,y,x+m,y,'-'); 
+      
+      if ( a1 == false ) { 
+        int [ ] change = {x,y,x+m,y};              // move of the pawn
+        output = join_array(change,output);        // move of the pawn added to the array 
+        
+      }  
+      
+    }
+    
+    // if pawn has not been moved, 2 square move allowed, with value of n     
+    if ( board[x][y].hasMoved == false ) { 
+      if ( board[x+n][y].piece == '-' ) {
+        board[x][y].piece = '-'; 
+        board[x+n][y].piece = pawn; 
+        a1 = check_king(board); 
+        change(x,y,x+n,y,'-');                      // board is changed back to its original configuration
+        
+        if ( a1 == false ) {
+          int [ ] change = {x,y,x+n,y};  
+          output = join_array(change,output); 
+          
+        }
+        
+      }
+      
+    }
+    
+    int a = 1; 
+    int num = 0; 
+    
+    // capture is possible with the current pawn, that is at board[x+m][y+1] and board[x+m][y-1], there is an opponent 
+    while ( num < 2 ) {
+      if ( capture_check(x+m,y+a,pawn) == true ) {
+        b = board[x+m][y+a].piece; 
+        board[x][y].piece = '-'; 
+        board[x+m][y+a].piece = pawn;   
+        a1 = check_king(board); 
+        change(x,y,x+m,y+a,b);                      // board is changed back to its original configuration
+        
+        if ( a1 == false ) { 
+          int [ ] change = {x,y,x+m,y+a};  
+          output = join_array(change,output); 
+          
+        } 
+        
+      } 
+      
+      a = -1; 
+      num++; 
+      
+    }
+    
+    board[x][y].move = output; 
+    
+    return output; 
+    
+  };  // pawn_move
+  
+  
+  public int [ ] pawn_promotion ( int x, int y, int m ) {
+    
+    int [ ] output = { };  
+    
+    int count=0; 
+    boolean a1;   
+    
+    if ( board[x+m][y].piece == '-' ) { 
+      board[x][y].piece = '-'; 
+      board[x+m][y].piece = pawn; 
+      a1 = check_king(board); 
+      change(x,y,x+m,y,'-');                          // board is changed back to its original configuration
+      
+      if ( a1 == false ) {
+        board[x][y].isPawnPromoted = true; 
+        while ( count < 4 ) {                       // four times added??? 
+          int [ ] change = {x,y,x+m,y}; 
+          output = join_array(change,output); 
+          count++; 
+          
+        } 
+        
+      } 
+      
+    } 
+    
+    return output; 
+    
+  };  // pawn_promotion
+  
+  
+  public void castling ( String player ) {
+    
+    boolean a1,a2,a3; 
+    int m=0; 
+    int stop=0;
+    
+    int b_right=0,b_left=0; 
+    
+    int [ ] output = { }; 
+    
+    // checks whose turn it is to see on which side of the board moves will occur 
+    // assuming board with chess pieces of human player is always facing down 
+    if ( player == "black" ) {
+      m = 0; 
+      
+    } 
+    
+    else if ( player == "white" ) {
+      m = 7; 
+      
+    } 
+    
+    // checks if king has moved before
+    
+    if ( board[m][4].hasMoved == true ||board[m][4].piece!=king) {
+      stop = 1; 
+      
+    }
+    
+    // checks if rook to the right has moved before
+    // seperate rook checks, either both have moved or 1 has moved or none have moved
+    if ( board[m][7].hasMoved == true  || board[m][7].piece != rook ) {
+      b_right = 1; 
+      
+    }
+    
+    // checks if rook to the left has moved before
+    if ( board[m][0].hasMoved == true || board[m][0].piece != rook) {
+      b_left = 1; 
+      
+    }  
+    
+    // king has not moved and player is not in check  
+    if ( check_king(board) == false && stop == 0 ) { 
+      
+      // bishop to the left has not moved, checks for empty spaces between left bishop and king       
+      if ( board[m][1].piece == '-' && board[m][2].piece == '-' && board[m][3].piece == '-' && b_left == 0 ) {
+        
+        // each time the king is moved (two squares) and when the bishop jumps, it is checked to see if it puts the king in check
+        // if not in check, allow move 
+        board[m][4].piece = '-'; 
+        board[m][3].piece = king; 
+        
+        a1 = check_king(board); 
+        
+        board[m][3].piece = '-';
+        board[m][2].piece = king;
+        
+        a2 = check_king(board); 
+        
+        board[m][0].piece = '-'; 
+        board[m][3].piece = rook;
+        
+        a3 = check_king(board);
+        
+        // board is changed back to its original configuration 
+        change(m,4,m,2,'-'); 
+        change(m,0,m,3,'-'); 
+        
+        // allow move 
+        if ( a1 == false && a2 == false && a3 == false ) {
+          board[m][0].isCastling = true;                    // i added is true to the bishop instead, to get moves directly
+          int [ ] change1 = {m,4,m,2}; 
+          output = join_array(change1,board[m][0].move); 
+          int [ ] change2 = {m,0,m,3}; 
+          output = join_array(change2,output); 
+          board[m][0].move = output;                        // castling is at the beginning of array for the bishop Piece object with bishop move first, then king move
+          
+        } 
+        
+      } 
+      
+      // bishop to the right has not moved, checks for empty spaces between right bishop and king 
+      if ( board[m][5].piece == '-' && board[m][6].piece == '-' && b_right == 0 ) {
+        
+        int [ ] output1 = { }; 
+        
+        // each time the king is moved (two squares) and when the bishop jumps, it is checked to see if it puts the king in check
+        // if not in check, allow move 
+        board[m][4].piece = '-'; 
+        board[m][5].piece = king; 
+        
+        a1 = check_king(board); 
+        
+        board[m][5].piece = '-';
+        board[m][6].piece = king;
+        
+        a2 = check_king(board); 
+        
+        board[m][7].piece = '-'; 
+        board[m][5].piece = rook;
+        
+        a3 = check_king(board);
+        
+        // board is changed back to its original configuration
+        change(m,4,m,6,'-'); 
+        change(m,7,m,5,'-'); 
+        
+        // allow move
+        if ( a1 == false && a2 == false && a3 == false ) {
+          board[m][7].isCastling = true; 
+          int [ ] change1 = {m,4,m,6}; 
+          output1 = join_array(change1,board[m][7].move); 
+          int [ ] change2 = {m,7,m,5}; 
+          output1 = join_array(change2,output1); 
+          board[m][7].move = output1;                     // castling is at the beginning of array for the bishop Piece object with bishop move first, then king move
+          
+        } 
+        
+      } 
+      
+    } 
+    
+  };  // castling
+  
+  
+  public int [ ] en_passant ( int x, int y, int [ ] last_moves ) {
+    
+    int h = 0; 
+    int stop = 0; 
+    boolean a1; 
+    
+    int [ ] output = { };  
+    
+    // last move positions
+    int a = last_moves[last_moves.length-4]; 
+    int b = last_moves[last_moves.length-3]; 
+    int c = last_moves[last_moves.length-2]; 
+    int d = last_moves[last_moves.length-1]; 
+    
+    // checks if (a,b) has been moved prior to the last move  
+    while ( h < (last_moves.length-4) ) {
+      if ( a == last_moves[h] && b == last_moves[h+1] ) { 
+        stop = 1;  
+        
+      }
+      
+      h = h+2; 
+      
+    }     
+    
+    // if piece is at this row, and opposing piece just moved, and piece is an opponent's pawn
+    if ( x == c && stop == 0 && board[c][d].piece == o_pawn ) {                
+      // checks on if opposing pawn is just on its right or left 
+      if ( (y+1) == d || (y-1) == d ) {
+        board[x][y].piece = '-'; 
+        board[c][d].piece = pawn; 
+        a1 = check_king(board); 
+        change(x,y,c,d,o_pawn);                                      // board is changed back to its original configuration
+        
+        if ( a1 == false ) {
+          int [ ] change = {x,y,c,d};                                // not to replace past moves for the pawn 
+          output = join_array(change,board[x][y].move);                     
+          
+        } 
+        
+      } 
+      
+    }
+    
+    return output; 
+    
+  };  // en_passant
+  
+  
+  // given a position on the board, this checks if the a capture can be made there, with the chess piece p
+  //Basically checks if the piece is one of its own or not
+  public boolean capture_check ( int x, int y, char p  ) {
+    
+    if ( x >= 0 && x < board.length && y >= 0 && y < board.length ) {
+      if ( Character.isUpperCase(p) ) {
+        return Character.isLowerCase(board[x][y].piece);  
+        
+      }
+      
+      else if ( Character.isLowerCase(p) ) {
+        return Character.isUpperCase(board[x][y].piece); 
+        
+      }
+      
+    }
+    
+    return false; 
+    
+  };  // capture_check
+  
+  // bishop, rook and queen can move as long as there is empty space, then it eithers stop due to end of board, to capture opponent or 
+  // because it reached one of it own
+  public int [ ] move_brq ( int x, int y, int [ ] [ ] pos, char p ) {
+    
+    int a,b; 
+    boolean a1; 
+    char f; 
+    
+    int [ ] output = { }; 
+    
+    for ( int g=0 ; g<pos.length ; g++ ) {
+      a = x + pos[g][0];  
+      b = y + pos[g][1]; 
+      
+      while ( a >= 0 && a < board.length && b >= 0 && b < board.length && board[a][b].piece == '-' ) { 
+        board[x][y].piece = '-'; 
+        board[a][b].piece = p; 
+        a1 = check_king(board); 
+        change(x,y,a,b,'-');      // board is changed back to its original configuration
+        
+        if ( a1 == false ) { 
+          int [ ] change = {x,y,a,b}; 
+          output = join_array(change,output); 
+          
+        }         
+        
+        a = a + pos[g][0]; 
+        b = b + pos[g][1]; 
+        
+      }
+      
+      if ( capture_check(a,b,p) == true ) { 
+        f = board[a][b].piece; 
+        board[x][y].piece = '-'; 
+        board[a][b].piece = p; 
+        a1 = check_king(board); 
+        change(x,y,a,b,f);     // board is changed back to its original configuration
+        
+        if ( a1 == false ) {
+          int [ ] change = {x,y,a,b}; 
+          output = join_array(change,output); 
+          
+        }
+        
+      }
+      
+    }; 
+    
+    return output; 
+    
+  };  // move_brq
+  
+  // knight and king can move to positions directly, whether to capture or not, the function is for both
+  public int [ ] move_knight_king ( int x, int y, int [ ] [ ] pos, char p ) {
+    
+    int a,b; 
+    boolean a1; 
+    char f; 
+    
+    int [ ] output = { }; 
+    
+    for ( int g=0 ; g<pos.length ; g++ ) {
+      a = x + pos[g][0]; 
+      b = y + pos[g][1]; 
+      
+      if ( a >= 0 && a < board.length && b >= 0 && b < board.length && ( board[a][b].piece == '-' || capture_check(a,b,p) == true ) ) {
+        f = board[a][b].piece;  
+        board[x][y].piece = '-'; 
+        board[a][b].piece = p;           
+        a1 = check_king(board); 
+        change(x,y,a,b,f);           // board is changed back to its original configuration
+        
+        if ( a1 == false ) {
+          int [ ] change = {x,y,a,b}; 
+          output = join_array(change,output); 
+          
+        }
+        
+        a = a + pos[g][0]; 
+        b = b + pos[g][1]; 
+        
+      } 
+      
+    };
+    
+    return output; 
+    
+  };  // move_knight_king 
+  
+  
+  // check if king of the player is in check to see if a certain move is possible or not 
+  public boolean check_king ( Pieces [ ] [ ] table ) {
+    
+    int p; 
+    int q; 
+    int count=0; 
+    
+    int [ ] [ ] array; 
+    int [ ] [ ] knight_attack = { {-2,-1}, {-2,1}, {2,-1}, {2,1}, {-1,-2}, {-1,2}, {1,-2}, {1,2} };
+    
+    LinkedList<int [ ] [ ]> list_directions = new LinkedList<int [ ] [ ]>(); 
+    LinkedList<Character> list1 = new LinkedList<Character>();
+    
+    findKing(queen,table); 
+    
+    list_directions.add(knight_attack); 
+    list_directions.add(positions); 
+    list1.add(o_knight); 
+    list1.add(o_pawn); 
+    
+    while ( count < list_directions.size() ) {
+      array = list_directions.get(count); 
+      
+      for ( int v=0 ; v<array.length ; v++ ) {         // check possible knight positions
+        p = king_x + array[v][0]; 
+        q = king_y + array[v][1]; 
+        
+        if ( p >= 0 && p < table.length && q >= 0 && q < table.length ) { 
+          if ( table[p][q].piece == list1.get(count) ) { 
+            return true; 
+            
+          } 
+          
+        } 
+        
+      }; 
+      
+      count++; 
+      
+    } 
+    
+    list_directions.clear(); 
+    list1.clear(); 
+    
+    list_directions.add(moves1); 
+    list_directions.add(positions); 
+    list_directions.add(positions1); 
+    list1.add(o_queen); 
+    list1.add(o_bishop); 
+    list1.add(o_rook); 
+    
+    count = 0; 
+    
+    while ( count < list_directions.size() ) { 
+      array = list_directions.get(count); 
+      
+      for ( int v=0 ; v<array.length ; v++ ) {
+        p = king_x + array[v][0]; 
+        q = king_y + array[v][1]; 
+        
+        while ( p > 0 && p < table.length-1 && q > 0 && q < table.length-1 && table[p][q].piece == '-' ) {
+          p = p + array[v][0]; 
+          q = q + array[v][1]; 
+          
+        } 
+        
+        if ( p >= 0 && p < table.length && q >= 0 && q < table.length && table[p][q].piece == list1.get(count) ) {      // add bishop and rook checks + check for empty spaces
+          return true; 
+          
+        } 
+        
+      }; 
+      
+      count++; 
+      
+    } 
+    
+    return false; 
+    
+  };  // check_king
+  
+  
+  /** A way to find the position of the king in a given board, given a chess char piece of the color playing at
+    * the moment                                                                                                 */ 
+  
+  public void findKing ( char p, Pieces [ ] [ ] matrix ) {
+    
+    for ( int i=0 ; i<matrix.length ; i++ ) {
+      for ( int j=0; j<matrix[i].length ; j++ ) {
+        if ( Character.isUpperCase(p) && matrix[i][j].piece == 'K' ) {
+          king_x = i; 
+          king_y = j; 
+          
+        } 
+        
+        else if ( Character.isLowerCase(p) && matrix[i][j].piece == 'k' ) {
+          king_x = i; 
+          king_y = j; 
+          
+        } 
+        
+      }; 
+      
+    };      
+    
+  };  // findKing 
+  
+  
+  // checks if board is in statemate after it has been iterated. Have not added it to the board_configuration method above. I did not
+  // if you would call it in the main algorithm or not
+  public boolean stalemate ( LinkedList l, Pieces [ ] [ ] b ) {
+    
+    if ( check_king(b) == false && l.size() == 0 ) {
+      return true; 
+      
+    }  
+    
+    return false; 
+    
+  };  // stalemate
+  
+  
+  // checks if board is in checkmate after it has been iterated. Have not added it to the board_configuration method above. I did not
+  // if you would call it in the main algorithm or not
+  public boolean checkmate ( LinkedList l, Pieces [ ] [ ] b ) {
+    
+    if ( check_king(b) == true && l.size() == 0 ) {
+      return true; 
+      
+    } 
+    
+    return false; 
+    
+  };  // checkmate
+  
+  
+  // attaches an array to a pieces object and adds it to a list<Pieces>
+  public void input ( LinkedList<Pieces> l, Pieces b, int [ ] c ) {
+    
+    if ( c.length != 0 ) {
+      b.move = c; 
+      l.add(b); 
+      
+    } 
+    
+  };  // input
+  
+  
+  // switches a board to its original configuration after a move has been attempted
+  public void change ( int x, int y, int r, int s, char d ) {
+    
+    board[x][y].piece = board[r][s].piece; 
+    
+    board[r][s].piece = d;  
+    
+  };  // change
+  
+  
+  public int [ ] join_array ( int [ ] a, int [ ] b ) {
+    
+    int [ ] y = new int[a.length+b.length]; 
+    int c; 
+    
+    for ( c = 0 ; c < a.length ; c++ ) {
+      y[c] = a[c]; 
+      
+    };  
+    
+    for ( int q = 0 ; q < b.length ; q++ ) {
+      y[c] = b[q]; 
+      c++; 
+      
+    }; 
+    
+    return y; 
+    
+  };  // join_array
+  
+  // This checks if the board has chess pieces that will lead to a draw. Have not added it to the board_configuration method above. I did not
+  // if you would call it in the main algorithm or not  
+  
+  public boolean drawn ( Pieces [ ] [ ] b ) {
+    
+    int x1=0,x2=0,y1=0,y2=0; 
+    LinkedList<String> s1 = new LinkedList<>();
+    LinkedList<String> s2 = new LinkedList<>();
+    l = new LinkedList<>(); 
+    
+    // This part just finds the alternate squares on the chess board and stores it two separate lists
+    String [ ] c1 = {"0","2","4","6"}; 
+    String [ ] c2 = {"1","3","5","7"};
+    String [ ] a; 
+    
+    for ( int y=0 ; y<8 ; y++ ) {
+      for ( int x=0 ; x<4 ; x++ ) {
+        s1.add(String.valueOf(y)+String.valueOf(c1[x])); 
+        s2.add(String.valueOf(y)+String.valueOf(c2[x])); 
+        
+      };
+      
+      a = c1; 
+      c1 = c2; 
+      c2 = a; 
+      
+    }; 
+    
+    // iterates through board to find chess pieces on it and adds it to list
+    for ( int i=0 ; i<b.length ; i++ ) { 
+      for ( int j=0 ; j<b[i].length ; j++ ) {
+        if ( b[i][j].piece != '-' ) { 
+          l.add(b[i][j].piece); 
+          
+        }
+        
+        if ( b[i][j].piece == 'B' ) {
+          x1 = i; 
+          y1 = j; 
+          
+        } 
+        
+        if ( b[i][j].piece == 'b' ) {
+          x2 = i; 
+          y2 = j;  
+          
+        } 
+        
+      }; 
+      
+    };
+    
+    // checks if chess pieces on board correspond to an instance of a game being drawn      
+    if ( l.contains('K') && l.contains('k') && l.size() == 2 ) {
+      return true; 
+      
+    }
+    
+    else if ( l.contains('K') && l.contains('k') && l.contains('b') && l.size() == 3 ) {
+      return true; 
+      
+    }
+    
+    else if ( l.contains('K') && l.contains('k') && l.contains('n') && l.size() == 3 ) {
+      return true; 
+      
+    }
+    
+    else if ( l.contains('K') && l.contains('k') && l.contains('B') && l.size() == 3 ) {
+      return true; 
+      
+    }
+    
+    else if ( l.contains('K') && l.contains('k') && l.contains('N') && l.size() == 3 ) {
+      return true; 
+      
+    }
+    
+    // checks if in this instance the bishops are on same coloured squares
+    
+    if ( l.contains('K') && l.contains('B') && l.contains('k') && l.contains('b') && l.size() == 4 ) {
+      if ( s1.contains(String.valueOf(x1)+String.valueOf(y1)) && s1.contains(String.valueOf(x2)+String.valueOf(y2)) ) {
+        return true; 
+        
+      }
+      
+      else if ( s2.contains(String.valueOf(x1)+String.valueOf(y1)) && s2.contains(String.valueOf(x2)+String.valueOf(y2)) ) {
+        return true; 
+        
+      } 
+      
+    }
+    
+    // checks if in this instance the bishops are on same coloured squares
+    
+    return false; 
+    
+  };  // drawn 
+  
+  
+}  // ChessMoves
