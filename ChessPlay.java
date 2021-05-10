@@ -2,9 +2,6 @@ import java.util.*;
 import java.io.*;
 import java.lang.String;
 /*Rimpy Amal Saha
- * 6600258
- * Muditaa Annauth
- * 6334965
  */  
 class ChessPlay
 {
